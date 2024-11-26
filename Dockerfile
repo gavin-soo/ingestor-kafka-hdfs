@@ -47,6 +47,7 @@ FROM rust:1.72
 
 # Install necessary dependencies
 RUN apt-get update && apt-get install -y \
+    software-properties-common \
     libssl-dev \
     ca-certificates \
     wget \
