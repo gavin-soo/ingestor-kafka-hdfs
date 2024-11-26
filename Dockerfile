@@ -1,6 +1,6 @@
 FROM rust:1.72 as build
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-install-recommends \
     apt-utils \
     software-properties-common \
     cmake \
@@ -46,7 +46,7 @@ RUN cargo build --release
 FROM rust:1.72
 
 # Install necessary dependencies
-RUN apt-get update && apt-get install -y \
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
     software-properties-common \
     libssl-dev \
     ca-certificates \

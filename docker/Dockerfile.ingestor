@@ -1,4 +1,3 @@
-# docker/Dockerfile.ingestor
 
 FROM ubuntu:20.04
 
