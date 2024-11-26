@@ -1,16 +1,17 @@
-FROM rust:1.72 as build
+FROM rust:1.72-slim-bullseye as build
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-install-recommends \
     apt-utils \
     software-properties-common \
     cmake \
+    build-essential \
     wget \
     libclang-dev \
     libudev-dev \
     libssl-dev \
     ca-certificates \
-    && add-apt-repository ppa:openjdk-r/ppa \
-    && apt-get update && apt-get install -y openjdk-8-jdk-headless \
+    perl \
+    && apt-get update && apt-get install -y openjdk-11-jdk-headless \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -26,7 +27,7 @@ ENV HADOOP_HOME="/opt/hadoop"
 ENV PATH="$HADOOP_HOME/bin:$PATH"
 
 # Set JAVA_HOME and update LD_LIBRARY_PATH for Java libraries
-ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-arm64
+ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-arm64
 # ENV LD_LIBRARY_PATH="$JAVA_HOME/lib/server:$HADOOP_HOME/lib/native:/usr/local/lib:$LD_LIBRARY_PATH"
 ENV LD_LIBRARY_PATH="$JAVA_HOME/jre/lib/aarch64/server:$HADOOP_HOME/lib/native:/usr/local/lib:$LD_LIBRARY_PATH"
 ENV CLASSPATH $HADOOP_HOME/share/hadoop/common/*:$HADOOP_HOME/share/hadoop/hdfs/*:$HADOOP_HOME/share/hadoop/common/lib/*:$HADOOP_HOME/share/hadoop/hdfs/lib/*
@@ -43,16 +44,15 @@ RUN cargo build --release
 
 
 
-FROM rust:1.72
+FROM rust:1.72-slim-bullseye
 
-# Install necessary dependencies
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
-    software-properties-common \
-    libssl-dev \
-    ca-certificates \
+#    software-properties-common \
+#    libssl-dev \
+#    ca-certificates \
+#    perl \
     wget \
-    && add-apt-repository ppa:openjdk-r/ppa \
-    && apt-get update && apt-get install -y openjdk-8-jdk-headless \
+    && apt-get update && apt-get install -y openjdk-11-jdk-headless \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -68,7 +68,7 @@ ENV HADOOP_HOME="/opt/hadoop"
 ENV PATH="$HADOOP_HOME/bin:$PATH"
 
 # Set JAVA_HOME and update LD_LIBRARY_PATH for Java libraries
-ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-arm64
+ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-arm64
 # ENV LD_LIBRARY_PATH="$JAVA_HOME/lib/server:$HADOOP_HOME/lib/native:/usr/local/lib:$LD_LIBRARY_PATH"
 ENV LD_LIBRARY_PATH="$JAVA_HOME/jre/lib/aarch64/server:$HADOOP_HOME/lib/native:/usr/local/lib:$LD_LIBRARY_PATH"
 ENV CLASSPATH $HADOOP_HOME/share/hadoop/common/*:$HADOOP_HOME/share/hadoop/hdfs/*:$HADOOP_HOME/share/hadoop/common/lib/*:$HADOOP_HOME/share/hadoop/hdfs/lib/*
@@ -82,7 +82,7 @@ WORKDIR /usr/local/bin
 
 # Copy the built binary from host to container
 #COPY target/release/ingestor-kafka-hbase .
-COPY --from=build /solana/target/release/block-encoder-service .
+COPY --from=build /solana/target/release/ingestor-kafka-hbase .
 #COPY docker/config/.env.test ./.env
 
 # Make the binary executable
