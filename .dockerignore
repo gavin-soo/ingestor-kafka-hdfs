@@ -1,0 +1,5 @@
+target/*
+!target/release/ingestor-kafka-hbase
+tmp/*
+.git
+.idea
