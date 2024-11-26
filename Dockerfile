@@ -9,9 +9,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libudev-dev \
     libssl-dev \
     ca-certificates \
-    openjdk-8-jdk-headless \
-   && apt-get clean \
-   && rm -rf /var/lib/apt/lists/*
+    && add-apt-repository ppa:openjdk-r/ppa \
+    && apt-get update && apt-get install -y openjdk-8-jdk-headless \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 
 ENV HADOOP_VERSION=3.4.0
@@ -48,9 +49,9 @@ FROM rust:1.72
 RUN apt-get update && apt-get install -y \
     libssl-dev \
     ca-certificates \
-    iputils-ping \
     wget \
-    openjdk-8-jdk-headless \
+    && add-apt-repository ppa:openjdk-r/ppa \
+    && apt-get update && apt-get install -y openjdk-8-jdk-headless \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
