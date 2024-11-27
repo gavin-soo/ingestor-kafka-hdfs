@@ -72,6 +72,7 @@ ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-arm64
 # ENV LD_LIBRARY_PATH="$JAVA_HOME/lib/server:$HADOOP_HOME/lib/native:/usr/local/lib:$LD_LIBRARY_PATH"
 ENV LD_LIBRARY_PATH="$JAVA_HOME/lib/server:$HADOOP_HOME/lib/native:/usr/local/lib:$LD_LIBRARY_PATH"
 ENV CLASSPATH $HADOOP_HOME/share/hadoop/common/*:$HADOOP_HOME/share/hadoop/hdfs/*:$HADOOP_HOME/share/hadoop/common/lib/*:$HADOOP_HOME/share/hadoop/hdfs/lib/*
+ENV CFLAGS="-I$JAVA_HOME/include -I$JAVA_HOME/include/linux"
 
 RUN cp $HADOOP_HOME/lib/native/libhdfs.so /usr/local/lib
 
