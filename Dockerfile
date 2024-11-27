@@ -29,7 +29,7 @@ ENV PATH="$HADOOP_HOME/bin:$PATH"
 # Set JAVA_HOME and update LD_LIBRARY_PATH for Java libraries
 ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-arm64
 # ENV LD_LIBRARY_PATH="$JAVA_HOME/lib/server:$HADOOP_HOME/lib/native:/usr/local/lib:$LD_LIBRARY_PATH"
-ENV LD_LIBRARY_PATH="$JAVA_HOME/jre/lib/server:$HADOOP_HOME/lib/native:/usr/local/lib:$LD_LIBRARY_PATH"
+ENV LD_LIBRARY_PATH="$JAVA_HOME/lib/server:$HADOOP_HOME/lib/native:/usr/local/lib:$LD_LIBRARY_PATH"
 ENV CLASSPATH $HADOOP_HOME/share/hadoop/common/*:$HADOOP_HOME/share/hadoop/hdfs/*:$HADOOP_HOME/share/hadoop/common/lib/*:$HADOOP_HOME/share/hadoop/hdfs/lib/*
 
 RUN cp $HADOOP_HOME/lib/native/libhdfs.so /usr/local/lib
@@ -70,7 +70,7 @@ ENV PATH="$HADOOP_HOME/bin:$PATH"
 # Set JAVA_HOME and update LD_LIBRARY_PATH for Java libraries
 ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-arm64
 # ENV LD_LIBRARY_PATH="$JAVA_HOME/lib/server:$HADOOP_HOME/lib/native:/usr/local/lib:$LD_LIBRARY_PATH"
-ENV LD_LIBRARY_PATH="$JAVA_HOME/jre/lib/server:$HADOOP_HOME/lib/native:/usr/local/lib:$LD_LIBRARY_PATH"
+ENV LD_LIBRARY_PATH="$JAVA_HOME/lib/server:$HADOOP_HOME/lib/native:/usr/local/lib:$LD_LIBRARY_PATH"
 ENV CLASSPATH $HADOOP_HOME/share/hadoop/common/*:$HADOOP_HOME/share/hadoop/hdfs/*:$HADOOP_HOME/share/hadoop/common/lib/*:$HADOOP_HOME/share/hadoop/hdfs/lib/*
 
 RUN cp $HADOOP_HOME/lib/native/libhdfs.so /usr/local/lib
