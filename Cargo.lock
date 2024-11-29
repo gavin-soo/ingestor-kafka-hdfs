@@ -1774,7 +1774,7 @@ dependencies = [
 
 [[package]]
 name = "ingestor-kafka-hbase"
-version = "1.0.0"
+version = "1.0.10"
 dependencies = [
  "anyhow",
  "backoff",
