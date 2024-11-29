@@ -69,6 +69,12 @@ pub fn block_uploader_app<'a>(version: &'a str, _default_args: &'a DefaultBlockU
                 .help("Do not store voting transactions in tx-by-addr and tx_full."),
         )
         .arg(
+            Arg::with_name("filter_error_tx")
+                .long("filter-error-tx")
+                .takes_value(false)
+                .help("Do not store failed transactions in tx-by-addr and tx_full."),
+        )
+        .arg(
             Arg::with_name("disable_blocks_compression")
                 .long("disable-blocks-compression")
                 .takes_value(false)
@@ -161,6 +167,12 @@ pub fn block_uploader_app<'a>(version: &'a str, _default_args: &'a DefaultBlockU
                 .takes_value(true)
                 // .default_value(&default_args.cache_address)
                 .help("Address of the cache server"),
+        )
+        .arg(
+            Arg::with_name("hbase_skip_wal")
+                .long("hbase-skip-wal")
+                .takes_value(false)
+                .help("If HBase should skip WAL when writing new data."),
         )
     ;
 }
