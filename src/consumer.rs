@@ -20,16 +20,14 @@ use {
         consumer::{stream_consumer::StreamConsumer, CommitMode, Consumer},
         message::{Message, BorrowedMessage},
     },
-    std::{io::{self, BufRead, BufReader, Read}, time::{Duration, Instant}, rc::Rc, cell::RefCell},
+    std::{io::{self, BufRead, BufReader, Read}, time::{Duration, Instant}},
     std::str,
     std::fmt,
     flate2::read::GzDecoder,
     // hdfs::{HdfsFsCache, HdfsFs, HdfsFile, HdfsErr},
     serde_json::Value,
     anyhow::Result,
-    tokio::io::AsyncBufReadExt,
 };
-use thiserror::Error;
 use hdfs::hdfs::{get_hdfs_by_full_path, HdfsFs, HdfsErr, HdfsFile};
 use std::sync::Arc;
 
@@ -302,7 +300,7 @@ impl KafkaConsumer {
         // Wrap `HdfsFile` in `HdfsFileReader` for `std::io::Read` compatibility
         let hdfs_file_reader = HdfsFileReader::new(hdfs_file);
 
-        let mut decompressor = GzDecoder::new(hdfs_file_reader);
+        let decompressor = GzDecoder::new(hdfs_file_reader);
         let mut buffered_reader = BufReader::new(decompressor);
 
         let mut line = String::new();

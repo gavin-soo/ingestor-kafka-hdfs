@@ -87,7 +87,7 @@ pub struct HBaseConnection {
 impl HBaseConnection {
     pub async fn new(
         address: &str,
-        read_only: bool,
+        _read_only: bool,
         timeout: Option<Duration>,
     ) -> Self {
         info!("Connecting to HBase at address {}", address.clone().to_string());
@@ -112,7 +112,7 @@ impl HBaseConnection {
 
         HBase {
             client,
-            timeout: self.timeout,
+            _timeout: self.timeout,
         }
     }
 
@@ -162,7 +162,7 @@ type OutputProtocol = TBinaryOutputProtocol<OutputTransport>;
 
 pub struct HBase {
     client: HbaseSyncClient<InputProtocol, OutputProtocol>,
-    timeout: Option<Duration>,
+    _timeout: Option<Duration>,
 }
 
 impl HBase {

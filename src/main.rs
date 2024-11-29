@@ -23,7 +23,7 @@ use {
     solana_sdk::{
         pubkey::Pubkey,
     },
-    clap::{value_t, value_t_or_exit, values_t, values_t_or_exit, ArgMatches},
+    clap::{value_t_or_exit, values_t, ArgMatches},
     log::{debug, info},
 };
 

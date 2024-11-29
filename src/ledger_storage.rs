@@ -45,10 +45,8 @@ use {
     thiserror::Error,
     tokio::task::JoinError,
 };
-use md5::{compute};
 use solana_sdk::message::v0::LoadedAddresses;
 use memcache::{Client, MemcacheError};
-use crate::hbase::HBase;
 
 #[derive(Debug, Error)]
 pub enum Error {
@@ -467,7 +465,7 @@ impl LedgerStorage {
             let signature = transaction.signatures[0];
             let memo = extract_and_fmt_memos(transaction_with_meta);
 
-            let mut should_skip_tx = false;
+            // let mut should_skip_tx = false;
             let mut should_skip_tx_by_addr = false;
             let mut should_skip_full_tx = false;
 
@@ -660,7 +658,7 @@ impl LedgerStorage {
             }));
         }
 
-        let mut bytes_written = 0;
+        let mut _bytes_written = 0;
         let mut total_cached_transactions = 0;
         let mut maybe_first_err: Option<Error> = None;
 
@@ -698,7 +696,7 @@ impl LedgerStorage {
                 }
                 Ok(Ok(task_result)) => {
                     match task_result {
-                        TaskResult::BytesWritten(bytes) => bytes_written += bytes,
+                        TaskResult::BytesWritten(bytes) => _bytes_written += bytes,
                         TaskResult::CachedTransactions(count) => total_cached_transactions += count,
                     }
                 }
@@ -718,7 +716,7 @@ impl LedgerStorage {
             debug!("Cached {} transactions from slot {}",slot, total_cached_transactions);
         }
 
-        let num_transactions = confirmed_block.transactions.len();
+        let _num_transactions = confirmed_block.transactions.len();
 
         // let signature = "2Mh6diFhdKfy5MyJfWv2AWEYe71wdyMGceDGxTmtpsFDUMXptWe3RtEXAef9SCoNJveiEQUMDdeP6UJVDdrQzbdV";
         // print_ui_amount_for_signature(confirmed_block.clone().into(), signature);
@@ -734,7 +732,7 @@ impl LedgerStorage {
         debug!("HBase: calling put_protobuf_cells_with_retry for blocks");
 
         if !self.uploader_config.disable_blocks {
-            bytes_written += self
+            _bytes_written += self
                 .connection
                 .put_protobuf_cells_with_retry::<generated::ConfirmedBlock>(
                     self.uploader_config.blocks_table_name.as_str(),
