@@ -305,21 +305,49 @@ impl KafkaConsumer {
 
         let mut line = String::new();
         while buffered_reader.read_line(&mut line)? > 0 {
-            let json_line = line.trim();
+            // println!("Read line: {:?}", line);
+            // let json_line = line.trim();
+            // println!("Trimmed line: {:?}", json_line);
+            let json_line = line.trim().to_string();
 
             if json_line.is_empty() {
+                println!("Skipping empty line");
                 line.clear();
                 continue;
             }
 
             // Process each JSON message
-            let parsed_json: Value = serde_json::from_str(json_line)?; // `serde_json::Error` converted to `MyError`
-            self.process_json_block(&parsed_json, json_line).await?;
+            // let parsed_json: Value = serde_json::from_str(json_line)?; // `serde_json::Error` converted to `MyError`
+            // self.process_json_block(&parsed_json, json_line).await?;
+
+            let result = self.process_json_block_with_debug(&json_line).await;
+
+            if let Err(e) = result {
+                if let io::ErrorKind::InvalidData = e.kind() {
+                    warn!("Read line: {:?}", line);
+                    warn!("Trimmed line: {:?}", json_line);
+                }
+                return Err(e.into());
+            }
 
             line.clear();
         }
 
         Ok(())
+    }
+
+    async fn process_json_block_with_debug(&self, json_data: &str) -> Result<(), io::Error> {
+        let parsed_json: Value = serde_json::from_str(json_data)?;
+
+        match self.process_json_block(&parsed_json, json_data).await {
+            Err(e) if e.kind() == io::ErrorKind::InvalidData => {
+                Err(io::Error::new(
+                    io::ErrorKind::InvalidData,
+                    "Missing 'blockID' in JSON",
+                ))
+            }
+            other => other,
+        }
     }
 
     /// Process a block of JSON data directly from the Kafka message.
