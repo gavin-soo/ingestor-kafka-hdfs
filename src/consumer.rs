@@ -307,6 +307,11 @@ impl KafkaConsumer {
         while buffered_reader.read_line(&mut line)? > 0 {
             let json_line = line.trim();
 
+            if json_line.is_empty() {
+                line.clear();
+                continue;
+            }
+
             // Process each JSON message
             let parsed_json: Value = serde_json::from_str(json_line)?; // `serde_json::Error` converted to `MyError`
             self.process_json_block(&parsed_json, json_line).await?;
