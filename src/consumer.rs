@@ -306,9 +306,9 @@ impl KafkaConsumer {
         let mut line = String::new();
         while buffered_reader.read_line(&mut line)? > 0 {
             // println!("Read line: {:?}", line);
-            // let json_line = line.trim();
+            let json_line = line.trim();
             // println!("Trimmed line: {:?}", json_line);
-            let json_line = line.trim().to_string();
+            // let json_line = line.trim().to_string();
 
             if json_line.is_empty() {
                 println!("Skipping empty line");
@@ -317,18 +317,18 @@ impl KafkaConsumer {
             }
 
             // Process each JSON message
-            // let parsed_json: Value = serde_json::from_str(json_line)?; // `serde_json::Error` converted to `MyError`
-            // self.process_json_block(&parsed_json, json_line).await?;
+            let parsed_json: Value = serde_json::from_str(json_line)?; // `serde_json::Error` converted to `MyError`
+            self.process_json_block(&parsed_json, json_line).await?;
 
-            let result = self.process_json_block_with_debug(&json_line).await;
+            // let result = self.process_json_block_with_debug(&json_line).await;
 
-            if let Err(e) = result {
-                if let io::ErrorKind::InvalidData = e.kind() {
-                    warn!("Read line: {:?}", line);
-                    warn!("Trimmed line: {:?}", json_line);
-                }
-                return Err(e.into());
-            }
+            // if let Err(e) = result {
+            //     if let io::ErrorKind::InvalidData = e.kind() {
+            //         warn!("Read line: {:?}", line);
+            //         warn!("Trimmed line: {:?}", json_line);
+            //     }
+            //     return Err(e.into());
+            // }
 
             line.clear();
         }
@@ -353,9 +353,18 @@ impl KafkaConsumer {
     /// Process a block of JSON data directly from the Kafka message.
     async fn process_json_block(&self, parsed_json: &Value, json_data: &str) -> Result<(), io::Error> {
         // Extract the blockID from the JSON message
-        let block_id = parsed_json["blockID"].as_u64().ok_or_else(|| {
-            io::Error::new(io::ErrorKind::InvalidData, "Missing 'blockID' in JSON")
-        })?;
+        // let block_id = parsed_json["blockID"].as_u64().ok_or_else(|| {
+        //     io::Error::new(io::ErrorKind::InvalidData, "Missing 'blockID' in JSON")
+        // })?;
+        let block_id = if let Some(id) = parsed_json["blockID"].as_u64() {
+            id
+        } else if let Some(id_str) = parsed_json["blockID"].as_str() {
+            id_str.parse::<u64>().map_err(|_| {
+                io::Error::new(io::ErrorKind::InvalidData, format!("Invalid 'blockID' string: {}", id_str))
+            })?
+        } else {
+            return Err(io::Error::new(io::ErrorKind::InvalidData, "Missing or invalid 'blockID' in JSON"));
+        };
 
         info!("Processing block with id {}", block_id);
 
