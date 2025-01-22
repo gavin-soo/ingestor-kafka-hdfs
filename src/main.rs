@@ -131,6 +131,7 @@ fn process_uploader_arguments(matches: &ArgMatches) -> UploaderConfig {
     let disable_blocks = matches.is_present("disable_blocks");
     let enable_full_tx = matches.is_present("enable_full_tx");
     let use_md5_row_key_salt = matches.is_present("use_md5_row_key_salt");
+    let hash_tx_full_row_keys = matches.is_present("hash_tx_full_row_keys");
     let filter_program_accounts = matches.is_present("filter_tx_by_addr_programs");
     let filter_voting_tx = matches.is_present("filter_voting_tx");
     let filter_error_tx = matches.is_present("filter_error_tx");
@@ -179,6 +180,7 @@ fn process_uploader_arguments(matches: &ArgMatches) -> UploaderConfig {
         disable_blocks,
         enable_full_tx,
         use_md5_row_key_salt,
+        hash_tx_full_row_keys,
         filter_program_accounts,
         filter_voting_tx,
         filter_error_tx,

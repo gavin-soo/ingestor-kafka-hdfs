@@ -54,7 +54,13 @@ pub fn block_uploader_app<'a>(version: &'a str) -> App<'a, 'a> {
             Arg::with_name("use_md5_row_key_salt")
                 .long("use-md5-row-key-salt")
                 .takes_value(false)
-                .help("Add md5 salt to hbase row keys."),
+                .help("Add md5 salt to blocks table row keys."),
+        )
+        .arg(
+            Arg::with_name("hash_tx_full_row_keys")
+                .long("hash-tx-full-row-keys")
+                .takes_value(false)
+                .help("Hash tx_full table row keys."),
         )
         .arg(
             Arg::with_name("filter_tx_by_addr_programs")

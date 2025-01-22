@@ -1,3 +1,4 @@
+use solana_sdk::signature::Signature;
 use {
     crate::{
         hbase::{Error as HBaseError, HBaseConnection},
@@ -29,6 +30,10 @@ use {
     thiserror::Error,
     tokio::task::JoinError,
     memcache::{Client, MemcacheError},
+};
+use xxhash_rust::{
+    xxh3::{xxh3_128},
+    xxh32::{xxh32},
 };
 
 #[derive(Debug, Error)]
@@ -149,6 +154,19 @@ fn slot_to_blocks_key(slot: Slot, use_md5: bool) -> String {
 
 fn slot_to_tx_by_addr_key(slot: Slot) -> String {
     slot_to_key(!slot)
+}
+
+fn signature_to_tx_full_key(signature: Signature, use_hash: bool) -> String {
+    if use_hash {
+        let signature_bytes = signature.as_ref(); // Convert signature to bytes
+        let hash_128 = xxh3_128(signature_bytes);
+        let hash_32 = xxh32(signature_bytes, 0);
+
+        // Concatenate the two hashes for a 160bit hash
+        format!("{:x}{:x}", hash_128, hash_32)
+    } else {
+        signature.to_string()
+    }
 }
 
 // A serialized `TransactionInfo` that is stored in the `tx` table
@@ -287,6 +305,7 @@ pub struct UploaderConfig {
     pub tx_by_addr_table_name: String,
     pub full_tx_table_name: String,
     pub use_md5_row_key_salt: bool,
+    pub hash_tx_full_row_keys: bool,
     pub filter_program_accounts: bool,
     pub filter_voting_tx: bool,
     pub filter_error_tx: bool,
@@ -311,6 +330,7 @@ impl Default for UploaderConfig {
             tx_by_addr_table_name: TX_BY_ADDR_TABLE_NAME.to_string(),
             full_tx_table_name: FULL_TX_TABLE_NAME.to_string(),
             use_md5_row_key_salt: false,
+            hash_tx_full_row_keys: false,
             filter_program_accounts: false,
             filter_voting_tx: false,
             filter_error_tx: false,
@@ -454,7 +474,8 @@ impl LedgerStorage {
 
             if self.uploader_config.enable_full_tx && !should_skip_full_tx {
                 full_tx_cells.push((
-                    signature.to_string(),
+                    // signature.to_string(),
+                    signature_to_tx_full_key(signature, self.uploader_config.hash_tx_full_row_keys),
                     ConfirmedTransactionWithStatusMeta {
                         slot,
                         tx_with_meta: transaction_with_meta.clone().into(),
@@ -467,7 +488,8 @@ impl LedgerStorage {
                 && !is_voting
                 && !transaction_with_meta.meta.status.is_err() {
                 full_tx_cache.push((
-                    signature.to_string(),
+                    // signature.to_string(),
+                    signature_to_tx_full_key(signature, self.uploader_config.hash_tx_full_row_keys),
                     ConfirmedTransactionWithStatusMeta {
                         slot,
                         tx_with_meta: transaction_with_meta.clone().into(),
