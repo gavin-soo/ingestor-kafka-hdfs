@@ -43,8 +43,8 @@ impl MessageDecoder for JsonMessageDecoder {
                     Ok(DecodedPayload::Block(block_id, block))
                 } else {
                     // If there's no "blockID", maybe it's still a file path in JSON form
-                    // e.g. {"filePath": "hdfs://my-file.gz"}
-                    if let Some(file_path) = json_val["filePath"].as_str() {
+                    // e.g. {"hdfs_path": "hdfs://my-file.gz"}
+                    if let Some(file_path) = json_val["hdfs_path"].as_str() {
                         Ok(DecodedPayload::FilePath(file_path.to_string()))
                     } else {
                         // unrecognized JSON structure
