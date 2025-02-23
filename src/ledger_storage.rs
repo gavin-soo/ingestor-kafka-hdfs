@@ -307,8 +307,14 @@ pub struct UploaderConfig {
     pub use_md5_row_key_salt: bool,
     pub hash_tx_full_row_keys: bool,
     pub filter_program_accounts: bool,
-    pub filter_voting_tx: bool,
-    pub filter_error_tx: bool,
+    pub filter_tx_voting: bool,
+    pub filter_tx_by_addr_voting: bool,
+    pub filter_tx_full_voting: bool,
+    pub filter_all_voting: bool,
+    pub filter_tx_error: bool,
+    pub filter_tx_by_addr_error: bool,
+    pub filter_tx_full_error: bool,
+    pub filter_all_error: bool,
     pub use_blocks_compression: bool,
     pub use_tx_compression: bool,
     pub use_tx_by_addr_compression: bool,
@@ -332,8 +338,14 @@ impl Default for UploaderConfig {
             use_md5_row_key_salt: false,
             hash_tx_full_row_keys: false,
             filter_program_accounts: false,
-            filter_voting_tx: false,
-            filter_error_tx: false,
+            filter_tx_voting: false,
+            filter_tx_by_addr_voting: false,
+            filter_tx_full_voting: false,
+            filter_all_voting: false,
+            filter_tx_error: false,
+            filter_tx_by_addr_error: false,
+            filter_tx_full_error: false,
+            filter_all_error: false,
             use_blocks_compression: true,
             use_tx_compression: true,
             use_tx_by_addr_compression: true,
@@ -426,22 +438,62 @@ impl LedgerStorage {
             let signature = transaction.signatures[0];
             let memo = extract_and_fmt_memos(transaction_with_meta);
 
-            // let mut should_skip_tx = false;
+            let mut should_skip_tx = false;
             let mut should_skip_tx_by_addr = false;
             let mut should_skip_full_tx = false;
 
             let is_voting = is_voting_tx(transaction_with_meta);
 
-            if self.uploader_config.filter_voting_tx && is_voting {
-                should_skip_tx_by_addr = true;
-                should_skip_full_tx = true;
+            if is_voting {
+                if self.uploader_config.filter_tx_voting {
+                    should_skip_tx = true;
+                }
+
+                if self.uploader_config.filter_tx_by_addr_voting {
+                    should_skip_tx_by_addr = true;
+                }
+
+                if self.uploader_config.filter_tx_full_voting {
+                    should_skip_full_tx = true;
+                }
+
+                if self.uploader_config.filter_all_voting {
+                    should_skip_tx = true;
+                    should_skip_tx_by_addr = true;
+                    should_skip_full_tx = true;
+                }
             }
+
+            // if self.uploader_config.filter_voting_tx && is_voting {
+            //     should_skip_tx_by_addr = true;
+            //     should_skip_full_tx = true;
+            // }
 
             let is_error = is_error_tx(transaction_with_meta);
 
-            if self.uploader_config.filter_error_tx && is_error {
-                should_skip_full_tx = true;
+            if is_error {
+                if self.uploader_config.filter_tx_error {
+                    should_skip_tx = true;
+                }
+
+                if self.uploader_config.filter_tx_by_addr_error {
+                    should_skip_tx_by_addr = true;
+                }
+
+                if self.uploader_config.filter_tx_full_error {
+                    should_skip_full_tx = true;
+                }
+
+                if self.uploader_config.filter_all_error {
+                    should_skip_tx = true;
+                    should_skip_tx_by_addr = true;
+                    should_skip_full_tx = true;
+                }
             }
+
+            // if self.uploader_config.filter_error_tx && is_error {
+            //     should_skip_full_tx = true;
+            // }
 
             let combined_keys = get_account_keys(&transaction_with_meta);
 
@@ -498,7 +550,7 @@ impl LedgerStorage {
                 ));
             }
 
-            if !self.uploader_config.disable_tx {
+            if !self.uploader_config.disable_tx && !should_skip_tx {
                 tx_cells.push((
                     signature.to_string(),
                     TransactionInfo {

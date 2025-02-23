@@ -133,8 +133,14 @@ fn process_uploader_arguments(matches: &ArgMatches) -> UploaderConfig {
     let use_md5_row_key_salt = matches.is_present("use_md5_row_key_salt");
     let hash_tx_full_row_keys = matches.is_present("hash_tx_full_row_keys");
     let filter_program_accounts = matches.is_present("filter_tx_by_addr_programs");
-    let filter_voting_tx = matches.is_present("filter_voting_tx");
-    let filter_error_tx = matches.is_present("filter_error_tx");
+    let filter_tx_voting = matches.is_present("filter_tx_voting");
+    let filter_tx_by_addr_voting = matches.is_present("filter_tx_by_addr_voting");
+    let filter_tx_full_voting = matches.is_present("filter_tx_full_voting");
+    let filter_all_voting = matches.is_present("filter_all_voting");
+    let filter_tx_error = matches.is_present("filter_tx_error");
+    let filter_tx_by_addr_error = matches.is_present("filter_tx_by_addr_error");
+    let filter_tx_full_error = matches.is_present("filter_tx_full_error");
+    let filter_all_error = matches.is_present("filter_all_error");
     let use_blocks_compression = !matches.is_present("disable_block_compression");
     let use_tx_compression = !matches.is_present("disable_tx_compression");
     let use_tx_by_addr_compression = !matches.is_present("disable_tx_by_addr_compression");
@@ -182,8 +188,14 @@ fn process_uploader_arguments(matches: &ArgMatches) -> UploaderConfig {
         use_md5_row_key_salt,
         hash_tx_full_row_keys,
         filter_program_accounts,
-        filter_voting_tx,
-        filter_error_tx,
+        filter_tx_voting,
+        filter_tx_by_addr_voting,
+        filter_tx_full_voting,
+        filter_all_voting,
+        filter_tx_error,
+        filter_tx_by_addr_error,
+        filter_tx_full_error,
+        filter_all_error,
         use_blocks_compression,
         use_tx_compression,
         use_tx_by_addr_compression,

@@ -69,16 +69,52 @@ pub fn block_uploader_app<'a>(version: &'a str) -> App<'a, 'a> {
                 .help("Skip program accounts from tx-by-addr index."),
         )
         .arg(
-            Arg::with_name("filter_voting_tx")
-                .long("filter-voting-tx")
+            Arg::with_name("filter_tx_voting")
+                .long("filter-tx-voting")
                 .takes_value(false)
-                .help("Do not store voting transactions in tx-by-addr and tx_full."),
+                .help("Do not store voting transactions in tx."),
         )
         .arg(
-            Arg::with_name("filter_error_tx")
-                .long("filter-error-tx")
+            Arg::with_name("filter_tx_by_addr_voting")
+                .long("filter-tx-by-addr-voting")
+                .takes_value(false)
+                .help("Do not store voting transactions in tx-by-addr."),
+        )
+        .arg(
+            Arg::with_name("filter_tx_full_voting")
+                .long("filter-tx-full-voting")
+                .takes_value(false)
+                .help("Do not store voting transactions in tx_full."),
+        )
+        .arg(
+            Arg::with_name("filter_all_voting")
+                .long("filter-all-voting")
+                .takes_value(false)
+                .help("Do not store voting transactions in tx, tx-by-addr and tx_full."),
+        )
+        .arg(
+            Arg::with_name("filter_tx_error")
+                .long("filter-tx-error")
                 .takes_value(false)
                 .help("Do not store failed transactions in tx-by-addr and tx_full."),
+        )
+        .arg(
+            Arg::with_name("filter_tx_by_addr_error")
+                .long("filter-tx-by-addr-error")
+                .takes_value(false)
+                .help("Do not store failed transactions in tx-by-addr and tx_full."),
+        )
+        .arg(
+            Arg::with_name("filter_tx_full_error")
+                .long("filter-tx-full-error")
+                .takes_value(false)
+                .help("Do not store failed transactions in tx-by-addr and tx_full."),
+        )
+        .arg(
+            Arg::with_name("filter_all_error")
+                .long("filter-all-error")
+                .takes_value(false)
+                .help("Do not store failed transactions in tx, tx-by-addr and tx_full."),
         )
         .arg(
             Arg::with_name("disable_blocks_compression")
