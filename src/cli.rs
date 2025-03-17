@@ -69,6 +69,12 @@ pub fn block_uploader_app<'a>(version: &'a str) -> App<'a, 'a> {
                 .help("Skip program accounts from tx-by-addr index."),
         )
         .arg(
+            Arg::with_name("filter_tx_by_addr_readonly_accounts")
+                .long("filter-tx-by-addr-readonly-accounts")
+                .takes_value(false)
+                .help("Skip readonly accounts from tx-by-addr index."),
+        )
+        .arg(
             Arg::with_name("filter_tx_voting")
                 .long("filter-tx-voting")
                 .takes_value(false)

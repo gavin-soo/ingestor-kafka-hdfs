@@ -307,6 +307,7 @@ pub struct UploaderConfig {
     pub use_md5_row_key_salt: bool,
     pub hash_tx_full_row_keys: bool,
     pub filter_program_accounts: bool,
+    pub filter_readonly_accounts: bool,
     pub filter_tx_voting: bool,
     pub filter_tx_by_addr_voting: bool,
     pub filter_tx_full_voting: bool,
@@ -338,6 +339,7 @@ impl Default for UploaderConfig {
             use_md5_row_key_salt: false,
             hash_tx_full_row_keys: false,
             filter_program_accounts: false,
+            filter_readonly_accounts: false,
             filter_tx_voting: false,
             filter_tx_by_addr_voting: false,
             filter_tx_full_voting: false,
@@ -502,6 +504,11 @@ impl LedgerStorage {
                     // Filter program accounts from tx-by-addr index
                     if self.uploader_config.filter_program_accounts
                         && is_program_account(address, transaction_with_meta, &combined_keys) {
+                        continue;
+                    }
+
+                    if self.uploader_config.filter_readonly_accounts
+                        && is_readonly_account(address, transaction_with_meta) {
                         continue;
                     }
 
@@ -864,4 +871,31 @@ fn is_program_account(
         });
 
     used_in_outer || used_in_inner
+}
+
+fn is_readonly_account(address: &Pubkey, transaction_with_meta: &VersionedTransactionWithStatusMeta) -> bool {
+    match &transaction_with_meta.transaction.message {
+        VersionedMessage::V0(_) => {
+            let static_keys = transaction_with_meta.transaction.message.static_account_keys();
+            let LoadedAddresses { writable, readonly } = &transaction_with_meta.meta.loaded_addresses;
+
+            // Check if the address is in the readonly list
+            readonly.contains(address) || (static_keys.contains(address) &&
+                !writable.contains(address))
+        },
+        VersionedMessage::Legacy(_) => {
+            // In legacy transactions, readonly accounts are determined based on the position in the list.
+            let static_keys = transaction_with_meta.transaction.message.static_account_keys();
+            let num_signers = transaction_with_meta.transaction.message.header().num_required_signatures as usize;
+            let num_readonly_signed = transaction_with_meta.transaction.message.header().num_readonly_signed_accounts as usize;
+            let num_readonly_unsigned = transaction_with_meta.transaction.message.header().num_readonly_unsigned_accounts as usize;
+
+            let readonly_start_signed = num_signers - num_readonly_signed;
+            let readonly_start_unsigned = static_keys.len() - num_readonly_unsigned;
+
+            static_keys.iter().enumerate().any(|(i, key)| {
+                key == address && (i >= readonly_start_signed || i >= readonly_start_unsigned)
+            })
+        }
+    }
 }

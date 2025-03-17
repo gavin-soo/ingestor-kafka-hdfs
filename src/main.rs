@@ -133,6 +133,7 @@ fn process_uploader_arguments(matches: &ArgMatches) -> UploaderConfig {
     let use_md5_row_key_salt = matches.is_present("use_md5_row_key_salt");
     let hash_tx_full_row_keys = matches.is_present("hash_tx_full_row_keys");
     let filter_program_accounts = matches.is_present("filter_tx_by_addr_programs");
+    let filter_readonly_accounts = matches.is_present("filter_tx_by_addr_readonly_accounts");
     let filter_tx_voting = matches.is_present("filter_tx_voting");
     let filter_tx_by_addr_voting = matches.is_present("filter_tx_by_addr_voting");
     let filter_tx_full_voting = matches.is_present("filter_tx_full_voting");
@@ -188,6 +189,7 @@ fn process_uploader_arguments(matches: &ArgMatches) -> UploaderConfig {
         use_md5_row_key_salt,
         hash_tx_full_row_keys,
         filter_program_accounts,
+        filter_readonly_accounts,
         filter_tx_voting,
         filter_tx_by_addr_voting,
         filter_tx_full_voting,
