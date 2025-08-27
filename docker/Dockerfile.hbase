@@ -1,5 +1,8 @@
 FROM ubuntu:20.04
 
+ENV DEBIAN_FRONTEND=noninteractive \
+    TZ=Etc/UTC
+
 # Dependency versions
 ENV HBASE_VERSION=2.4.11 \
     JAVA_VERSION=openjdk-8
